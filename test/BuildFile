@@ -1,0 +1,7 @@
+<use name=boost>
+<use name=root>
+<use name=GeneratorInterface/PyquenInterface>
+<use name=SimDataFormats/HepMCProduct>
+<flags SEAL_PLUGIN_NAME="PyquenAnalyzer">
+<library file=PyquenAnalyzer.cc name=PyquenAnalyzer>
+</library>
