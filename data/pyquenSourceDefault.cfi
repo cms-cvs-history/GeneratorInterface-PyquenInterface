@@ -1,0 +1,12 @@
+   untracked bool pythiaHepMCVerbosity   = false	
+   untracked int32 pythiaPylistVerbosity = 0
+   untracked int32 maxEventsToPrint      = 0 # events to print if pythiaPylistVerbosit
+
+   double aBeamTarget   = 207.             # beam/target atomic number
+   double bFixed        = 0.               # fixed impact param (fm); valid only if cflag_=0
+   int32  cFlag         = 0                # centrality flag
+                                            # =  0 fixed impact param
+                                            # <> 0 between bmin and bmax
+   double comEnergy     = 5500.            # collision energy 
+
+
