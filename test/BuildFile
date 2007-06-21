@@ -2,6 +2,6 @@
 <use name=root>
 <use name=GeneratorInterface/PyquenInterface>
 <use name=SimDataFormats/HepMCProduct>
-<flags SEAL_PLUGIN_NAME="PyquenAnalyzer">
+<flags EDM_PLUGIN=1>
 <library file=PyquenAnalyzer.cc name=PyquenAnalyzer>
 </library>
