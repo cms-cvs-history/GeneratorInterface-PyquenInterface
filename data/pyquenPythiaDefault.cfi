@@ -1,5 +1,5 @@
 vstring pythiaDefault = {
-	"MSEL=0",         # ! user power',
+	"MSEL=1",         # ! hard QCD on',
 	"MSTU(21)=1",     # ! to avoid stopping run',
 	"PARU(14)=1.",    # ! tolerance parameter to adjust fragmentation',
 	"MSTP(81)=0",     # ! pp multiple scattering off',
