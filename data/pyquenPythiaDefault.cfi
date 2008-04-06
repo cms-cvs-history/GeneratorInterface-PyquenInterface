@@ -1,3 +1,5 @@
+block pyquenPythiaDefaultBlock = {
+
 vstring pythiaDefault = {
 	"MSEL=1",         # ! hard QCD on',
 	"MSTU(21)=1",     # ! to avoid stopping run',
@@ -28,7 +30,7 @@ vstring pythiaPromptPhotons = {
 vstring orcaSettings = {
         "MSEL=0",         # ! Only user defined processes,
 
-        "PARP(67)=1.",
+Ã        "PARP(67)=1.",
         "PARP(82)=1.9",
         "PARP(85)=0.33",
         "PARP(86)=0.66",
@@ -38,3 +40,4 @@ vstring orcaSettings = {
         "MSTJ(22)=2"
 }
 
+}
