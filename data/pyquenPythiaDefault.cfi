@@ -30,7 +30,7 @@ vstring pythiaPromptPhotons = {
 vstring orcaSettings = {
         "MSEL=0",         # ! Only user defined processes,
 
-Ã        "PARP(67)=1.",
+        "PARP(67)=1.",
         "PARP(82)=1.9",
         "PARP(85)=0.33",
         "PARP(86)=0.66",
