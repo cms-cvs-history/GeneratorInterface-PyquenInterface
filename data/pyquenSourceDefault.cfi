@@ -1,4 +1,17 @@
-block pyquenSourceDefaultBlock = {
+include "GeneratorInterface/PyquenInterface/data/pyquenPythiaDefault.cfi"
+
+source = PyquenSource {
+
+ PSet PythiaParameters = { 
+	# This is a vector of ParameterSet names to be read, in this order
+        # They are  in the include files 
+	# pythiaDefault HAS TO BE ALWAYS included
+	# If just the hard QCD dijets wanted, comment out the photons corresponding include and parameter set
+	vstring parameterSets = {
+		"pythiaDefault"          # MSEL=1 (hard QCD in) + pyquen needed initializations
+		}
+	using pyquenPythiaDefaultBlock
+	}
 
    untracked bool pythiaHepMCVerbosity   = false	
    untracked int32 pythiaPylistVerbosity = 0
