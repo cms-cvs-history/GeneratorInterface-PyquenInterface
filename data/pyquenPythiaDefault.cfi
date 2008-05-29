@@ -1,13 +1,31 @@
 block pyquenPythiaDefaultBlock = {
 
 vstring pythiaDefault = {
-	"MSEL=1",         # ! hard QCD on',
-	"MSTU(21)=1",     # ! to avoid stopping run',
-	"PARU(14)=1.",    # ! tolerance parameter to adjust fragmentation',
-	"MSTP(81)=0",     # ! pp multiple scattering off',
+        "MSEL=1",         # ! hard QCD on',
+        "MSTU(21)=1",     # ! to avoid stopping run',
+        "PARU(14)=1.",    # ! tolerance parameter to adjust fragmentation',
+        "MSTP(81)=0",     # ! pp multiple scattering off',
         "PMAS(5,1)=4.8",  # ! b quark mass',
-        "PMAS(6,1)=175.0", # ! t quark mass'
-        "CKIN(3)=7."       # ! ptMin
+        "PMAS(6,1)=175.0",# ! t quark mass'
+        "CKIN(3)=7.",     # ! ptMin
+
+        "MSTJ(22)=2",
+        "PARJ(71)=10."    # Decays only if life time < 10mm
+}
+
+vstring pythiaMuons = {
+        "MSEL=1",         # ! hard QCD on',
+        "MSTU(21)=1",     # ! to avoid stopping run',
+        "PARU(14)=1.",    # ! tolerance parameter to adjust fragmentation',
+        "MSTP(81)=0",     # ! pp multiple scattering off',
+        "PMAS(5,1)=4.8",  # ! b quark mass',
+        "PMAS(6,1)=175.0",# ! t quark mass'
+
+        "CKIN(3)=20.",    # ! ptMin for muon sub-events
+
+        "MSTJ(22)=2",
+        "PARJ(71)=40."    # Decays only if life time < 40mm
+
 }
 
 vstring pythiaJets = {
