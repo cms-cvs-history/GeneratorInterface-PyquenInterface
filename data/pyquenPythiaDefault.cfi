@@ -45,7 +45,7 @@ vstring pythiaPromptPhotons = {
         'MSUB(115)=1'   # g+g->g+gamma
         }
 
-vstring orcaSettings = {
+vstring csa08Settings = {
         "MSEL=0",         # ! Only user defined processes,
 
         "PARP(67)=1.",
