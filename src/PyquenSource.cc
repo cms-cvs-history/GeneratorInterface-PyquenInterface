@@ -3,7 +3,7 @@
  * Generates PYQUEN HepMC events
  *
  * Original Author: Camelia Mironov
- * $Id: PyquenSource.cc,v 1.12 2008/04/09 16:43:53 yilmaz Exp $
+ * $Id: PyquenSource.cc,v 1.13.2.1 2009/01/09 10:34:29 saout Exp $
 */
 
 #include <iostream>
@@ -12,11 +12,11 @@
 #include "GeneratorInterface/PyquenInterface/interface/PyquenSource.h"
 #include "GeneratorInterface/PyquenInterface/interface/PYR.h"
 #include "GeneratorInterface/PyquenInterface/interface/PyquenWrapper.h"
-#include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
+#include "GeneratorInterface/Pythia6Interface/interface/Pythia6Declarations.h"
 
-#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenInfoProduct.h"
 #include "SimDataFormats/HiGenData/interface/GenHIEvent.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -122,7 +122,7 @@ bool PyquenSource::call_pygive(const std::string& iParm )
   int numWarn = pydat1.mstu[26];//# warnings
   int numErr = pydat1.mstu[22]; //# errors
   // call the fortran routine pygive with a fortran string
-  PYGIVE( iParm.c_str(), iParm.length() );  
+  gen::pygive_( iParm.c_str(), iParm.length() );  
 
   // if an error or warning happens it is problem
   return pydat1.mstu[26] == numWarn && pydat1.mstu[22] == numErr;   
@@ -159,7 +159,7 @@ bool PyquenSource::produce(Event & e)
   }
 
   // call PYTHIA to finish the hadronization
-  PYEXEC();
+  gen::pyexec_();
 
   // fill the HEPEVT with the PYJETS event record
   call_pyhepc(1);
