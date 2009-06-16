@@ -2,8 +2,7 @@
  *
  * Generates PYQUEN HepMC events
  *
- * Original Author: Camelia Mironov
- * $Id: PyquenHadronizer.cc,v 1.2 2009/05/28 17:36:53 yilmaz Exp $
+ * $Id: PyquenHadronizer.cc,v 1.3 2009/05/28 18:54:16 yilmaz Exp $
 */
 
 #include <iostream>
