@@ -2,7 +2,7 @@
  *
  * Generates PYQUEN HepMC events
  *
- * $Id: PyquenHadronizer.cc,v 1.3 2009/05/28 18:54:16 yilmaz Exp $
+ * $Id: PyquenHadronizer.cc,v 1.3.2.1 2009/06/16 09:03:28 yilmaz Exp $
 */
 
 #include <iostream>
@@ -42,6 +42,7 @@ angularspecselector_(pset.getParameter<int>("angularSpectrumSelector")),
 bmin_(pset.getParameter<double>("bMin")),
 bmax_(pset.getParameter<double>("bMax")),
 bfixed_(pset.getParameter<double>("bFixed")),
+evtplane_(0),
 cflag_(pset.getParameter<int>("cFlag")),
 comenergy(pset.getParameter<double>("comEnergy")),
 doquench_(pset.getParameter<bool>("doQuench")),
@@ -55,7 +56,8 @@ qgptau0_(pset.getParameter<double>("qgpProperTimeFormation")),
 maxEventsToPrint_(pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
 pythiaHepMCVerbosity_(pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
 pythiaPylistVerbosity_(pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
-   pythia6Service_(new Pythia6Service(pset))
+hiSrc_(pset.getUntrackedParameter<InputTag>("heavyIonSource",InputTag("generator"))),
+pythia6Service_(new Pythia6Service(pset))
 {
   // Default constructor
   // Verbosity Level
@@ -70,6 +72,8 @@ pythiaPylistVerbosity_(pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0
   //Max number of events printed on verbosity level 
   maxEventsToPrint_ = pset.getUntrackedParameter<int>("maxEventsToPrint",0);
   LogDebug("Events2Print") << "Number of events to be printed = " << maxEventsToPrint_ << endl;
+
+  if(embedding_) cflag_ = 0;
 
 }
 
@@ -89,17 +93,17 @@ PyquenHadronizer::~PyquenHadronizer()
 void PyquenHadronizer::add_heavy_ion_rec(HepMC::GenEvent *evt)
 {
   HepMC::HeavyIon *hi = new HepMC::HeavyIon(
-    1,                                 // Ncoll_hard
+     1,                                 // Ncoll_hard
     -1,                                 // Npart_proj
     -1,                                 // Npart_targ
-    1,                                 // Ncoll
+     1,                                 // Ncoll
     -1,                                 // spectator_neutrons
     -1,                                 // spectator_protons
     -1,                                 // N_Nwounded_collisions
     -1,                                 // Nwounded_N_collisions
     -1,                                 // Nwounded_Nwounded_collisions
     plfpar.bgen,                        // impact_parameter in [fm]
-    0,                                  // event_plane_angle
+    evtplane_,                          // event_plane_angle
     0,                                  // eccentricity
     -1                                  // sigma_inel_NN
   );
@@ -113,27 +117,6 @@ void PyquenHadronizer::add_heavy_ion_rec(HepMC::GenEvent *evt)
 bool PyquenHadronizer::generatePartonsAndHadronize()
 {
    Pythia6Service::InstanceWrapper guard(pythia6Service_);
-
-   //Get Parameters from the background Pb+Pb event if switched on
-   double evtPlane = 0;
-
-   // Not possible to retrieve impact paramter and event plane info
-   // at this part, need to overwrite filter() in 
-   // PyquenGeneratorFilter 
-   /*
-   if(embedding_){
-      Handle<HepMCProduct> input;
-      e.getByLabel("source",input);
-      const HepMC::GenEvent * inev = input->GetEvent();
-      HepMC::HeavyIon* hi = inev->heavy_ion();
-      if(hi){
-	 bfixed_ = hi->impact_parameter();
-	 evtPlane = hi->event_plane_angle();
-      }else{
-	 LogWarning("EventEmbedding")<<"Background event does not have heavy ion record!";
-      }
-   }
-   */   
 
    // Generate PYQUEN event
   // generate single partonic PYTHIA jet event
@@ -163,7 +146,7 @@ bool PyquenHadronizer::generatePartonsAndHadronize()
 
   evt->set_event_scale(pypars.pari[16]);           // Q^2
 
-  if(embedding_) rotateEvtPlane(evt,evtPlane);
+  if(embedding_) rotateEvtPlane(evt);
   add_heavy_ion_rec(evt);
 
   event().reset(evt);
@@ -203,59 +186,6 @@ bool PyquenHadronizer::pyqpythia_init(const ParameterSet & pset)
    }
 
   //initialize PYTHIA
-
-   /*
-
- //random number seed
-  edm::Service<RandomNumberGenerator> rng;
-  randomEngine = fRandomEngine = &(rng->getEngine());
-  uint32_t seed = rng->mySeed();
-
-
-  ostringstream sRandomSet;
-  sRandomSet << "MRPY(1)=" << seed;
-  gen::call_pygive(sRandomSet.str());
-
-  //Turn Hadronization Off if there is quenching
-  if(doquench_){
-     string sHadOff("MSTP(111)=0");
-     gen::call_pygive(sHadOff);
-  }
-
-    // Set PYTHIA parameters in a single ParameterSet  
-  ParameterSet pythia_params = pset.getParameter<ParameterSet>("PythiaParameters") ;
-  
-  // The parameter sets to be read
-  vector<string> setNames = pythia_params.getParameter<vector<string> >("parameterSets");
-
-    // Loop over the sets
-  for ( unsigned i=0; i<setNames.size(); ++i ) {
-    string mySet = setNames[i];
-    
-    // Read the PYTHIA parameters for each set of parameters
-    vector<string> pars = pythia_params.getParameter<vector<string> >(mySet);
-    
-    cout << "----------------------------------------------" << endl;
-    cout << "Read PYTHIA parameter set " << mySet << endl;
-    cout << "----------------------------------------------" << endl;
-    
-    // Loop over all parameters and stop in case of mistake
-    for( vector<string>::const_iterator itPar = pars.begin(); itPar != pars.end(); ++itPar ) {
-      static string sRandomValueSetting("MRPY(1)");
-      if( 0 == itPar->compare(0,sRandomValueSetting.size(),sRandomValueSetting) ) {
-         throw edm::Exception(edm::errors::Configuration,"PythiaError")
-           << " Attempted to set random number using 'MRPY(1)'. NOT ALLOWED!\n"
-              " Use RandomNumberGeneratorService to set the random number seed.";
-      }
-      if( !gen::call_pygive(*itPar) ) {
-        throw edm::Exception(edm::errors::Configuration,"PythiaError") 
-           << "PYTHIA did not accept \""<<*itPar<<"\"";
-      }
-    }
-  }
-
-   */
-
   return true;
 }
 
@@ -305,10 +235,10 @@ char* PyquenHadronizer::nucleon(){
   return nuc;
 }
 
-void PyquenHadronizer::rotateEvtPlane(HepMC::GenEvent* evt, double angle){
+void PyquenHadronizer::rotateEvtPlane(HepMC::GenEvent* evt){
 
-   double sinphi0 = sin(angle);
-   double cosphi0 = cos(angle);
+   double sinphi0 = sin(evtplane_);
+   double cosphi0 = cos(evtplane_);
 
    for ( HepMC::GenEvent::vertex_iterator vt=evt->vertices_begin();
 	 vt!=evt->vertices_end(); ++vt )
@@ -356,6 +286,24 @@ bool PyquenHadronizer::declareStableParticles( std::vector<int> pdg )
 
 }
 
+bool PyquenHadronizer::getHeavyIonParameters(edm::Event& ev){
+   //Get Parameters from the background Pb+Pb event if necessary                              
+   if(embedding_){
+      Handle<HepMCProduct> input;
+      ev.getByLabel(hiSrc_,input);
+      const HepMC::GenEvent * inev = input->GetEvent();
+      HepMC::HeavyIon* hi = inev->heavy_ion();
+      if(hi){
+         bfixed_ = hi->impact_parameter();
+         evtplane_ = hi->event_plane_angle();
+      }else{
+         LogError("EventEmbedding")<<"Background event does not have heavy ion record!";
+	 return false;
+      }
+   }
+
+   return true;
+}
 
 
 //____________________________________________________________________

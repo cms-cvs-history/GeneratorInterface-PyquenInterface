@@ -1,10 +1,11 @@
+
 #ifndef Pyquen_Hadronizer_h
 #define Pyquen_Hadronizer_h
 
 /** \class PyquenHadronizer
  *
  * Generates PYTHIA+PYQUEN ==> HepMC events
- * $Id: PyquenHadronizer.h,v 1.2 2009/05/28 17:36:52 yilmaz Exp $
+ * $Id: PyquenHadronizer.h,v 1.3 2009/05/28 18:54:16 yilmaz Exp $
  *
  * Camelia Mironov                                  
  *   for the Generator Interface. March 2007
@@ -12,6 +13,8 @@
 
 #include "GeneratorInterface/Core/interface/BaseHadronizer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
 #include <map>
 #include <string>
 #include "HepMC/GenEvent.h"
@@ -42,7 +45,7 @@ namespace gen
     bool initializeForExternalPartons();
     bool initializeForInternalPartons();
     bool declareStableParticles( const std::vector<int> );
-
+    bool getHeavyIonParameters(edm::Event& ev);
     void finalizeEvent();
     void statistics();
     const char* classname() const;
@@ -53,7 +56,7 @@ namespace gen
     bool	     pyqpythia_init(const edm::ParameterSet &pset);
     bool	     pyquen_init(const edm::ParameterSet &pset);
     char*            nucleon();
-    void             rotateEvtPlane(HepMC::GenEvent* evt, double angle);
+    void             rotateEvtPlane(HepMC::GenEvent* evt);
 
     edm::ParameterSet pset_;
     double           abeamtarget_;            //! beam/target atomic mass number 
@@ -64,6 +67,7 @@ namespace gen
     double           bmin_;                   //! min impact param (fm); valid only if cflag_!=0       
     double           bmax_;                   //! max impact param (fm); valid only if cflag_!=0       
     double           bfixed_;                 //! fixed impact param (fm); valid only if cflag_=0
+    double           evtplane_;               //! Event Plane for embedding
     int              cflag_;                  //! centrality flag =0 fixed impact param, <>0 minbias
     double           comenergy;               //! collision energy  
     bool             doquench_;               //! if true perform quenching (default = true)
@@ -83,6 +87,7 @@ namespace gen
     bool             pythiaHepMCVerbosity_;   //! HepMC verbosity flag
     unsigned int     pythiaPylistVerbosity_;  //! Pythia PYLIST Verbosity flag 
 
+    edm::InputTag    hiSrc_;                  //! Source tag for Pb+Pb event to mix
     //    CLHEP::HepRandomEngine* fRandomEngine;
     Pythia6Service* pythia6Service_;
 
