@@ -3,7 +3,7 @@
 <use name=GeneratorInterface/PyquenInterface>
 <use name=SimDataFormats/GeneratorProducts>
 <use name=SimDataFormats/HiGenData>
-<use name=PhysicsTools/UtilAlgos>
+<use name=CommonTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
 <flags EDM_PLUGIN=1>
 <library file=PyquenAnalyzer.cc name=PyquenAnalyzer>
